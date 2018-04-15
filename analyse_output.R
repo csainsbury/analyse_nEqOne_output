@@ -74,17 +74,5 @@ analysisFrame$sbp <- sbpData[, (total_n_bins - bins_in_testPeriod)]
 # subset analysisFrame to IDs of interest (ie on the interest drug during runin)
 interestAnalysisFrame <- analysisFrame[report_interestDrug_noChange == 1, ]
 
-
-
-
-# find IDs where runin test period all the interest drug
-
-
-
-
-
-# find IDs on metformin alone in last year of runin
-
-# find predictions for each of the 2nd line agents
-
-# find highest prediction
+# observations:
+# GLP1 favoured. need to add SU alone and an insulin option - basal and basal bolus
