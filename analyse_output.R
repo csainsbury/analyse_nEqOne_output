@@ -19,6 +19,20 @@ drugLookupDT <- data.table(drugLookup)
 
 # number for metformin alone
 interestNumber <- drugLookupDT[vectorWords == interestDrug]$vectorNumbers
+report_sameDrug <- rep(0, nrow(testExtract))
+report_drugOfInterest <- rep(0, nrow(testExtract))
+
+for (i in seq(1, nrow(testExtract), 1)) {
+  
+  rowValues <- as.numeric(testExtract[i, ])
+  
+  
+}
+
+# are all drugs in the test period the same
+
+# find IDs where runin test period all the interest drug
+
 
 
 
