@@ -8,7 +8,7 @@ interestDrug = "Metformin_"
 
 # load number of loops
 nLoops <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/numberOfLoops.csv", header = FALSE)
-nLoops_integer <- nLoops[1, 1]
+nLoops_integer <- nLoops[1, 1] - 1
 
 # load drug data for all IDs from test set
 drugData <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/X_test_drugs.csv", header = FALSE)
@@ -54,24 +54,37 @@ for (j in seq(1, nrow(therapyArray), 1)) {
 
 analysisArray_3d <- array(0, c(nrow(drugData), nrow(therapyArray), nLoops_integer))
 
-for (iter in seq(1, nLoops_integerm 1)) {
+for (iter in seq(1, nLoops_integer, 1)) {
 # generate analysis frame for a single iteration
 # predictions, starting hba1c / sbp etc
 analysisArray_2d <- array(0, c(nrow(drugData), nrow(therapyArray)))
 #colnames(analysisFrame_2d) <- therapyArray$drugNames
 
-# first add drug combinations as will be different between experiments
-for (ii in seq(1, nrow(therapyArray), 1)) {
-  
-  drugExperiment_n <- (ii - 1) # because from python start at 0
-  
-  pathToRead <- paste("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/y_pred_asNumber_combinationNumber_",drugExperiment_n, "_runN_", iter,".csv", sep = "")
-  
-  analysisArray_2d[, ii] <- read.csv(pathToRead, header = FALSE)[,1]
-  
+    # first add drug combinations as will be different between experiments
+    for (ii in seq(1, nrow(therapyArray), 1)) {
+      
+      drugExperiment_n <- (ii - 1) # because from python start at 0
+      
+      pathToRead <- paste("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/y_pred_asNumber_combinationNumber_",drugExperiment_n, "_runN_", iter,".csv", sep = "")
+      
+      analysisArray_2d[, ii] <- read.csv(pathToRead, header = FALSE)[,1]
+      
+    }
+
+# build the 3d array
+analysisArray_3d[, , iter] = analysisArray_2d
+
 }
 
-# 
+# average the output
+averagedOutput_mean <- array(0, c(nrow(drugData), nrow(therapyArray)))
+averagedOutput_median <- array(0, c(nrow(drugData), nrow(therapyArray)))
+
+for (r in seq(1, nrow(analysisArray_2d), 1)) {
+  for (c in seq(1, ncol(analysisArray_2d), 1)) {
+    averagedOutput_mean[r, c] <- mean(analysisArray_3d[r, c, ])
+    averagedOutput_median[r, c] <- median(analysisArray_3d[r, c, ])
+  }
 }
 
 # then add consistent parameters
@@ -79,6 +92,12 @@ bmiData <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/de
 hba1cData <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/decoded_Xtest_hba1c.csv", header = FALSE)
 sbpData <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/decoded_Xtest_sbp.csv", header = FALSE)
 # ageData <- read.csv("./pythonOutput/X_test_age.csv", header = FALSE)
+
+# choose mean or median
+analysisFrame = as.data.frame(averagedOutput_mean)
+#analysisFrame = as.data.frame(averagedOutput_median)
+colnames(analysisFrame) <- therapyArray$drugNames
+
 
 analysisFrame$bmi <- bmiData[, (total_n_bins - bins_in_testPeriod)]
 analysisFrame$hba1c <- hba1cData[, (total_n_bins - bins_in_testPeriod)]
