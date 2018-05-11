@@ -48,20 +48,30 @@ for (j in seq(1, nrow(therapyArray), 1)) {
   therapyArray$drugNames[j] <- vectorWordsAsCharacter[drugLookupDT$vectorNumbers == therapyArray$V1[j]]
 }
 
-# generate analysis frame
+## loop through for each iteration of the analysis
+## generate a 3D matrix of row - ID, col - drug combinations, z - iterations
+## then will need to average through the z axis to give final result
+
+analysisArray_3d <- array(0, c(nrow(drugData), nrow(therapyArray), nLoops_integer))
+
+for (iter in seq(1, nLoops_integerm 1)) {
+# generate analysis frame for a single iteration
 # predictions, starting hba1c / sbp etc
-analysisFrame <- as.data.frame(matrix(0, nrow = nrow(drugData), ncol = nrow(therapyArray)))
-colnames(analysisFrame) <- therapyArray$drugNames
+analysisArray_2d <- array(0, c(nrow(drugData), nrow(therapyArray)))
+#colnames(analysisFrame_2d) <- therapyArray$drugNames
 
 # first add drug combinations as will be different between experiments
 for (ii in seq(1, nrow(therapyArray), 1)) {
   
   drugExperiment_n <- (ii - 1) # because from python start at 0
   
-  pathToRead <- paste("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/y_pred_asNumber_combinationNumber_",drugExperiment_n, ".csv", sep = "")
+  pathToRead <- paste("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/y_pred_asNumber_combinationNumber_",drugExperiment_n, "_runN_", iter,".csv", sep = "")
   
-  analysisFrame[, ii] <- read.csv(pathToRead, header = FALSE)
+  analysisArray_2d[, ii] <- read.csv(pathToRead, header = FALSE)[,1]
   
+}
+
+# 
 }
 
 # then add consistent parameters
