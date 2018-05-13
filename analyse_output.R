@@ -9,6 +9,7 @@ interestDrug = "Metformin_"
 # load number of loops
 nLoops <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/numberOfLoops.csv", header = FALSE)
 nLoops_integer <- nLoops[1, 1] - 1
+#nLoops_integer = 8
 
 # load drug data for all IDs from test set
 drugData <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/X_test_drugs.csv", header = FALSE)
@@ -76,6 +77,12 @@ analysisArray_3d[, , iter] = analysisArray_2d
 
 }
 
+## plot the relative probabilities
+for (p in seq(1, 50, 1)) {
+  if(p == 1) {plot(analysisArray_3d[p,1,], cex = 0, ylim = c(0, 1)); lines(analysisArray_3d[p,1,])}
+  if(p > 1) {points(analysisArray_3d[p,1,], cex = 0); lines(analysisArray_3d[p,1,], col = p)}
+}
+
 # average the output
 averagedOutput_mean <- array(0, c(nrow(drugData), nrow(therapyArray)))
 averagedOutput_median <- array(0, c(nrow(drugData), nrow(therapyArray)))
@@ -94,8 +101,9 @@ sbpData <- read.csv("~/R/_workingDirectory/analyse_nEqOne_output/pythonOutput/de
 # ageData <- read.csv("./pythonOutput/X_test_age.csv", header = FALSE)
 
 # choose mean or median
-analysisFrame = as.data.frame(averagedOutput_mean)
-#analysisFrame = as.data.frame(averagedOutput_median)
+#analysisFrame = as.data.frame(averagedOutput_mean)
+#
+analysisFrame = as.data.frame(averagedOutput_median)
 colnames(analysisFrame) <- therapyArray$drugNames
 
 
